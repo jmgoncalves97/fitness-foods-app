@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+
+  sync-data:
+    build:
+      context: .
+      dockerfile: ./sync-data/Dockerfile
+    volumes:
+      - ./sync-data:/var/www/html
+      - /var/www/html/vendor
+      - ./sync-data/storage:/var/www/html/storage
+    ports:
+      - 8000:8000
+    environment:
+      - QUEUE_CONNECTION=${QUEUE_CONNECTION}
+      - REDIS_HOST=${REDIS_HOST}
+      - CRUD_API=${CRUD_API}
+      - REDIS_CLIENT=${REDIS_CLIENT}
+      - BATCH_SIZE=${BATCH_SIZE}
