@@ -20,3 +20,20 @@ services:
       - CRUD_API=${CRUD_API}
       - REDIS_CLIENT=${REDIS_CLIENT}
       - BATCH_SIZE=${BATCH_SIZE}
+
+  # api:
+  #   image: yiisoftware/yii2-php:7.4-apache
+  #   volumes:
+  #     # - ~/.composer-docker/cache:/root/.composer/cache:delegated
+  #     - ./api:/app:delegated
+  #   ports:
+
+  api:
+    build:      
+      context: .
+      dockerfile: ./api/Dockerfile
+    volumes:
+      - ./api:/var/www/html
+      - /var/www/html/vendor
+    ports:
+      - 8080:8080
