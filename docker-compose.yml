@@ -20,3 +20,46 @@ services:
       - CRUD_API=${CRUD_API}
       - REDIS_CLIENT=${REDIS_CLIENT}
       - BATCH_SIZE=${BATCH_SIZE}
+
+  # api:
+  #   image: yiisoftware/yii2-php:7.4-apache
+  #   volumes:
+  #     # - ~/.composer-docker/cache:/root/.composer/cache:delegated
+  #     - ./api:/app:delegated
+  #   ports:
+
+  api:
+    build:      
+      context: .
+      dockerfile: ./api/Dockerfile
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./api:/var/www/html
+      - /var/www/html/vendor
+    ports:
+      - 8080:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:latest
+    environment:
+    - POSTGRES_DB=${DB_NAME}
+    - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - database:/var/lib/postgresql/data
+
+volumes:
+  database:
